@@ -1,0 +1,10 @@
+contract-9asdf7 - Does not contain only litters or digits
+ntract90asdf555 - Does not start with docnum and with contract
+docnum7yr0wsh5! - Does not contain only litters or digits
+docnumyr0wgsh5V - Valid document number
+123456789012345 - Does not start with docnum and with contract
+contract&&9asdf - Does not contain only litters or digits
+contract0asdf5V - Valid document number
+docnum7yr0123 - Does not contain fifteen characters
+docnum7r0wgsh6V - Valid document number
+contract90asdf556 - Does not contain fifteen characters
