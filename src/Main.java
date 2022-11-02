@@ -37,18 +37,15 @@ public class Main {
         Path fileReport = Paths.get("resources", "checkedDocNums.txt");
 
         try (Scanner scanner = new Scanner(System.in);
-             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileReport.toFile()))) {
+             BufferedWriter bufWriter = new BufferedWriter(new FileWriter(fileReport.toFile()))) {
 
             System.out.println("Set the file paths. To finish entering the list of files, enter 0");
 
             List<String> allPaths = getListOfPaths(scanner);
             Set<String> setStrings = getHashSetOfStrings(allPaths);
             Map<String, String> checkedDocs = getHashMapForReport(setStrings);
+            writeDocNumsToReport(bufWriter, checkedDocs);
 
-            for (Map.Entry<String, String> entry : checkedDocs.entrySet()) {
-                bufferedWriter.write(entry.getKey() + " - " + entry.getValue());
-                bufferedWriter.newLine();
-            }
             System.out.println("The path to the report file: " + fileReport.normalize());
         }
     }
@@ -94,6 +91,13 @@ public class Main {
             }
         }
         return checkedDocs;
+    }
+
+    private static void writeDocNumsToReport(BufferedWriter bufWriter, Map<String, String> checkedDocs) throws IOException {
+        for (Map.Entry<String, String> entry : checkedDocs.entrySet()) {
+            bufWriter.write(entry.getKey() + " - " + entry.getValue());
+            bufWriter.newLine();
+        }
     }
 
     private static boolean isValidNumber(String docNum) {
