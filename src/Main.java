@@ -1,8 +1,7 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import static java.nio.file.StandardOpenOption.*;
 
 /**
  * Программа должна получать имена файлов с номерами документов с консоли:
@@ -33,29 +32,22 @@ import java.util.*;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-
-        Path fileReport = Paths.get("resources", "checkedDocNums.txt");
-
-        try (Scanner scanner = new Scanner(System.in);
-             BufferedWriter bufWriter = new BufferedWriter(new FileWriter(fileReport.toFile()))) {
+        try (Scanner scanner = new Scanner(System.in)) {
 
             System.out.println("Set the file paths. To finish entering the list of files, enter 0");
 
             List<String> allPaths = getListOfPaths(scanner);
             Set<String> setStrings = getHashSetOfStrings(allPaths);
             Map<String, String> checkedDocs = getHashMapForReport(setStrings);
-            writeDocNumsToReport(bufWriter, checkedDocs);
-
-            System.out.println("The path to the report file: " + fileReport.normalize());
+            writeDocNumsToReport(checkedDocs);
         }
     }
 
     private static List<String> getListOfPaths(Scanner scanner) {
         List<String> allPaths = new ArrayList<>();
-        String filePath = null;
 
-        while ((!Objects.equals(filePath, "0"))) {
-            filePath = scanner.nextLine();
+        while (true) {
+            String filePath = scanner.nextLine();
             if (filePath.equals("0")) break;
             allPaths.add(filePath);
         }
@@ -72,32 +64,29 @@ public class Main {
     }
 
     private static Map<String, String> getHashMapForReport(Set<String> setStrings) {
-        String validDocsMessage = "Valid document number";
-        String message1 = "Does not contain fifteen characters";
-        String message2 = "Does not start with docnum and with contract";
-        String message3 = "Does not contain only litters or digits";
-
         Map<String, String> checkedDocs = new HashMap<>();
 
         for (String docNumber : setStrings) {
             if (isValidNumber(docNumber)) {
-                checkedDocs.put(docNumber, validDocsMessage);
+                checkedDocs.put(docNumber, "Valid document number");
             } else if (docNumber.length() != 15) {
-                checkedDocs.put(docNumber, message1);
+                checkedDocs.put(docNumber, "Does not contain fifteen characters");
             } else if (!docNumber.startsWith("docnum") && !docNumber.startsWith("contract")) {
-                checkedDocs.put(docNumber, message2);
+                checkedDocs.put(docNumber, "Does not start with docnum and with contract");
             } else {
-                checkedDocs.put(docNumber, message3);
+                checkedDocs.put(docNumber, "Does not contain only litters or digits");
             }
         }
         return checkedDocs;
     }
 
-    private static void writeDocNumsToReport(BufferedWriter bufWriter, Map<String, String> checkedDocs) throws IOException {
+    private static void writeDocNumsToReport(Map<String, String> checkedDocs) throws IOException {
+        Path fileReport = Paths.get("resources", "checkedDocNums.txt");
+
         for (Map.Entry<String, String> entry : checkedDocs.entrySet()) {
-            bufWriter.write(entry.getKey() + " - " + entry.getValue());
-            bufWriter.newLine();
+            Files.write(fileReport, (entry.getKey() + " - " + entry.getValue() + "\n").getBytes(), CREATE, APPEND);
         }
+        System.out.println("The path to the report file: " + fileReport.normalize());
     }
 
     private static boolean isValidNumber(String docNum) {
